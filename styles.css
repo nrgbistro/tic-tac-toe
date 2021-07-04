@@ -56,11 +56,11 @@ div {
 	font-weight: bold;
 }
 
-.playable:hover {
+.gameBoardButton:hover {
 	background-color: green;
 }
 
 .unplayable:hover {
-	background-color: red;
+	background-color: rgba(0, 0, 0, 0.0);
 }
 

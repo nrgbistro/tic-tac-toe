@@ -2,7 +2,7 @@ const log = (message) => console.log(`Logger: ${message}`);
 let player1, player2, currentPlayer;
 
 const gameController = (function () {
-	const initializeGame = () => {
+	const runGame = () => {
 		log("Starting Game");
 		gameBoard.initializeGameBoardArray();
 
@@ -12,7 +12,7 @@ const gameController = (function () {
 		// Creates player Objects
 		player1 = playerCreator.createPlayer("Nolan", "X");
 		player2 = playerCreator.createPlayer("Kevin", "O");
-
+		currentPlayer = player1;
 
 		gameBoard.updateDisplay();
 		log("Completed Game Initialization");
@@ -21,19 +21,18 @@ const gameController = (function () {
 	};
 
 	const gameLoop = () => {
-		currentPlayer = player1;
+
 
 	};
 
 	return {
-		initializeGame,
+		runGame,
 	};
 })();
 
 
 const gameBoard = (function () {
 	let gameBoardArray;
-	//let gameBoardDOMArray = [];
 
 	const initializeGameBoardArray = () => {
 		gameBoardArray = [];
@@ -43,7 +42,6 @@ const gameBoard = (function () {
 	};
 
 	const updateDisplay = () => {
-		console.log(gameBoardArray);
 		const gameBoardButtons = Array.from(document.querySelectorAll(".gameBoardButton"));
 		for (let i = 0; i < gameBoardButtons.length; i++) {
 			gameBoardButtons[i].innerText = gameBoardArray[i];
@@ -56,31 +54,55 @@ const gameBoard = (function () {
 			const newButton = document.createElement("div");
 			newButton.id = String(i);
 			newButton.classList.add("gameBoardButton");
-			newButton.classList.add("playable");
+
 			newButton.addEventListener("click", function () {
 				handleGameBoardClick(this);
 			}, {once: true});
+
 			gameBoardContainer.appendChild(newButton);
 		}
 	};
 
 	const handleGameBoardClick = (clickedButton) => {
-		clickedButton.classList.toggle("playable");
-		clickedButton.classList.toggle("unplayable");
+		clickedButton.classList.add("unplayable");
 		clickedButton.innerText = currentPlayer.markerSymbol;
+		let index = clickedButton.id - 1;
+		gameBoardArray[index] = currentPlayer.markerSymbol;
+
+		checkWinner();
+
+		if(checkTie()){
+			// Reset game
+		}
+
 		toggleCurrentPlayer();
 	};
 
 	const toggleCurrentPlayer = () => {
-		if(currentPlayer === player1){
-			currentPlayer = player2;
+		currentPlayer = (currentPlayer === player1) ? player2 : player1;
+	}
+
+	const checkWinner = () => {
+		let gridGameBoardArray = [];
+
+		let index = 0;
+		for (let i = 0; i < 3; i++) {
+			let newRow = [];
+			for(let j = 0; j < 3; j++){
+				newRow.push(gameBoardArray[index]);
+				index++;
+			}
+			gridGameBoardArray.push(newRow);
 		}
-		else if(currentPlayer === player2){
-			currentPlayer = player1;
+	}
+
+	const checkTie = () => {
+		for(let i = 0; i < 9; i++) {
+			if(gameBoardArray[i] === String.fromCharCode(160)) {
+				return false;
+			}
 		}
-		else {
-			log("toggleCurrentPlayer Error");
-		}
+		return true;
 	}
 
 	return {
@@ -110,7 +132,6 @@ const playerCreator = (function () {
 		getName() {
 			return name;
 		},
-
 	};
 
 	return {
@@ -119,4 +140,4 @@ const playerCreator = (function () {
 })();
 
 
-gameController.initializeGame();
+gameController.runGame();
