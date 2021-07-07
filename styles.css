@@ -24,10 +24,20 @@ div {
 
 #topBar {
 	border-bottom: 2px black solid;
+	text-align: center;
+}
+
+#topBar h1 {
+	height: 100%;
 }
 
 #statsBar {
 	border-top: 2px black solid;
+	display: flex;
+}
+
+#statsBar div {
+	flex-grow: 1;
 }
 
 #gameBoardContainer {

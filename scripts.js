@@ -1,5 +1,6 @@
 const log = (message) => console.log(`Logger: ${message}`);
 let player1, player2, currentPlayer;
+let roundOver = false;
 
 const gameController = (function () {
 	const runGame = () => {
@@ -16,13 +17,6 @@ const gameController = (function () {
 
 		gameBoard.updateDisplay();
 		log("Completed Game Initialization");
-
-		gameLoop();
-	};
-
-	const gameLoop = () => {
-
-
 	};
 
 	return {
@@ -69,9 +63,10 @@ const gameBoard = (function () {
 		let index = clickedButton.id - 1;
 		gameBoardArray[index] = currentPlayer.markerSymbol;
 
-		checkWinner();
-
-		if(checkTie()){
+		if (checkWinner()) {
+			log("Player has won");
+			// Add to winners score
+		} else if (checkTie()) {
 			// Reset game
 		}
 
@@ -80,30 +75,62 @@ const gameBoard = (function () {
 
 	const toggleCurrentPlayer = () => {
 		currentPlayer = (currentPlayer === player1) ? player2 : player1;
-	}
+	};
 
 	const checkWinner = () => {
-		let gridGameBoardArray = [];
+		let gameGrid = [];
 
 		let index = 0;
 		for (let i = 0; i < 3; i++) {
 			let newRow = [];
-			for(let j = 0; j < 3; j++){
+			for (let j = 0; j < 3; j++) {
 				newRow.push(gameBoardArray[index]);
 				index++;
 			}
-			gridGameBoardArray.push(newRow);
+			gameGrid.push(newRow);
 		}
-	}
+
+		// Check diagonals
+		if (gameGrid[0][0] === gameGrid[1][1] && gameGrid[1][1] === gameGrid[2][2] &&
+			gameGrid[0][0] !== String.fromCharCode(160)) {
+			log("diagonal 1");
+			return true;
+		}
+
+		if (gameGrid[0][2] === gameGrid[1][1] && gameGrid[1][1] === gameGrid[2][0] &&
+			gameGrid[0][2] !== String.fromCharCode(160)) {
+			log("diagonal 2");
+			return true;
+		}
+
+		// Check rows
+		for (let i = 0; i < 3; i++) {
+			if (gameGrid[i][0] === gameGrid[i][1] && gameGrid[i][1] === gameGrid[i][2] &&
+				gameGrid[i][0] !== String.fromCharCode(160)) {
+				log(`row ${i + 1}`);
+				return true;
+			}
+		}
+
+		// Check columns
+		for (let i = 0; i < 3; i++) {
+			if (gameGrid[0][i] === gameGrid[1][i] && gameGrid[1][i] === gameGrid[2][i] &&
+				gameGrid[0][i] !== String.fromCharCode(160)) {
+				log(`column ${i + 1}`);
+				return true;
+			}
+		}
+		return false;
+	};
 
 	const checkTie = () => {
-		for(let i = 0; i < 9; i++) {
-			if(gameBoardArray[i] === String.fromCharCode(160)) {
+		for (let i = 0; i < 9; i++) {
+			if (gameBoardArray[i] === String.fromCharCode(160)) {
 				return false;
 			}
 		}
 		return true;
-	}
+	};
 
 	return {
 		updateDisplay,
